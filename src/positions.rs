@@ -105,52 +105,36 @@ fn to_position(client_id: u16, txns: &Vec<&Transaction>) -> Position {
         }
     }
 
-    fn diag<I, T>(_s: &str, _v: I)
-    where T: std::fmt::Debug,
-          I: IntoIterator<Item = T> {
-        // println!("{}:", _s);
-        // for t in _v { println!(" => {:?}", t) }
-    }
-
-    diag("txns", txns);
-
     let chargebacks: HashSet<u32> = txns
         .iter()
         .filter(|t| t.tx_type == CHARGEBACK)
         .map(|t| t.tx_id)
         .collect();
-    diag("chargebacks", &chargebacks);
     let resolves: HashSet<u32> = txns
         .iter()
         .filter(|t| t.tx_type == RESOLVE)
         .map(|t| t.tx_id)
         .collect();
-    diag("resolves", &resolves);
     let disputes: HashSet<u32> = txns
         .iter()
         .filter(|t| t.tx_type == DISPUTE)
         .map(|t| t.tx_id)
         .collect();
-    diag("disputes", &disputes);
     let dedisputed: HashSet<u32> = chargebacks.union(&resolves)
         .cloned()
         .collect();
-    diag("dedisputed", &dedisputed);
     let disputed: Vec<u32> = (&disputes - &dedisputed)
         .iter()
         .cloned()
         .collect();
-    diag("disputed", &disputed);
     let disputeds: Vec<&Transaction> = disputed
         .into_iter()
         .map(|txid| *txns.iter().find(|t| t.tx_id == txid).unwrap())
         .collect();
-    diag("disputeds", &disputeds);
     let resolveds: Vec<&Transaction> = resolves
         .into_iter()
         .map(|txid| *txns.iter().find(|t| t.tx_id == txid).unwrap())
         .collect();
-    diag("resolveds", &resolveds);
 
     let undisputed = txns
         .iter()
