@@ -1,0 +1,7 @@
+# reckoning
+
+## Usage
+
+```sh
+make
+```
